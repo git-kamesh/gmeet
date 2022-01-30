@@ -36,7 +36,8 @@ handleCommands();
 
 // --- Handlers ---
 function createGoogleMeetLink() {
-    getGoogleMeetURL()
+    chrome.storage.local.get(['accounts', 'selected_account'])
+        .then(getGoogleMeetURL)
         .then(openTab)
         .then( waitTillURL(GOOGLE_MEET_RGX) )
         .then( copyToClipboard )
@@ -47,30 +48,30 @@ function createGoogleMeetLink() {
 
 function fetchGoogleAccount() {
     openTab( GOOGLE_MEET_LANDING_URL, false)
-    .then( isURL(GOOGLE_MEET_LANDING_RGX) )
-    .then((tab) => {
-        return new Promise((resolve, reject) => {
-            // send message to content script to fetch google account
-            Messenger.send({ targetScript: 'content', action: GOOGLE_ACCOUNT_FETCH, tabId: tab.id });
+        .then( isURL(GOOGLE_MEET_LANDING_RGX) )
+        .then((tab) => {
+            return new Promise((resolve, reject) => {
+                // send message to content script to fetch google account
+                Messenger.send({ targetScript: 'content', action: GOOGLE_ACCOUNT_FETCH, tabId: tab.id });
 
-            // wait till content script sends back the account
-            Messenger.listen({ targetScript: 'background', action: GOOGLE_ACCOUNT_LIST }, (message) => {
-                if(message.length) {                
-                    Messenger.send({ targetScript: 'popup', action: GOOGLE_ACCOUNT_LIST, message });
-                    resolve(tab);
-                } else {
-                    reject( {key: 'error.google.accounts.notfound'} );
-                }
-            });
+                // wait till content script sends back the account
+                Messenger.listen({ targetScript: 'background', action: GOOGLE_ACCOUNT_LIST }, (message) => {
+                    if(message.length) {                
+                        Messenger.send({ targetScript: 'popup', action: GOOGLE_ACCOUNT_LIST, message });
+                        resolve(tab);
+                    } else {
+                        reject( {key: 'error.google.accounts.notfound'} );
+                    }
+                });
+            })
         })
-    })
-    .then( closeTab )
-    .catch((err) => {
-        if(err.key == 'error.url.notfound') {
-            Messenger.send({ targetScript: 'popup', action: GOOGLE_ACCOUNT_LIST, message: err.key });
-            closeTab(err.tab);
-        }
-    });
+        .then( closeTab )
+        .catch((err) => {
+            if(err.key == 'error.url.notfound') {
+                Messenger.send({ targetScript: 'popup', action: GOOGLE_ACCOUNT_LIST, message: err.key });
+                closeTab(err.tab);
+            }
+        });
 } 
 
 // --- Hooks ---
@@ -157,19 +158,17 @@ function isURL(url_rgx) {
     });
 }
 
-function getGoogleMeetURL() {
+function getGoogleMeetURL({ accounts, selected_account }) {
     return new Promise((resolve, reject) => {
-        chrome.storage.local.get(['accounts', 'selected_account'], function (result) {
-            if (result.accounts) {
-                let account_idx = result.accounts.indexOf(result.selected_account);
-                if (account_idx != -1) {
-                    resolve(`${GOOGLE_MEET_CREATE_URL}${account_idx}`);
-                } else {
-                    reject( {key: 'error.google.accounts.notfound'} );
-                }
+        if (accounts.length && selected_account) {
+            let account_idx = accounts.indexOf(selected_account);
+            if (account_idx != -1) {
+                resolve(`${GOOGLE_MEET_CREATE_URL}${account_idx}`);
             } else {
                 reject( {key: 'error.google.accounts.notfound'} );
             }
-        });
+        } else {
+            reject( {key: 'error.google.accounts.notfound'} );
+        }
     });
 }
