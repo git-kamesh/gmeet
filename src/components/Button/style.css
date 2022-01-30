@@ -1,0 +1,26 @@
+.ext-btn {
+    padding: 7px 15px;
+    border-radius: 5px;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.ext-btn.primary {
+    color: #fff;
+    background: black;
+    border: none;
+}
+
+.ext-btn.secondary {
+    background: #fff;
+    border: 1px solid black;
+    color: black;
+}
+
+.ext-btn:hover {
+    box-shadow: 0px 0px 3px rgba(0,0,0, 0.4);
+}
+
+.ext-btn:active {
+    outline: 1px silver;
+}

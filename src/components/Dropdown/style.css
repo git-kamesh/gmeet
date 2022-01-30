@@ -1,0 +1,23 @@
+.ext-drpdwn  {
+    position: relative;
+    display: inline-block;
+    width: 80%;
+    padding: 4px 3px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.ext-drpdwn:hover {
+    box-shadow: 0px 0px 2px rgba(0,0,0, 0.25);
+}
+
+.ext-drpdwn-title {
+    text-align: left;
+    margin-left: 27px;
+    margin-bottom: 5px;
+    color: #999;
+}
