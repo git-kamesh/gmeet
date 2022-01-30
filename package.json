@@ -10,7 +10,8 @@
   "scripts": {
     "build": "node utils/build.js",
     "start": "node utils/webserver.js",
-    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "test": "jest"
   },
   "dependencies": {
     "@hot-loader/react-dom": "^17.0.1",
@@ -42,6 +43,7 @@
     "fs-extra": "^10.0.0",
     "html-loader": "^3.0.0",
     "html-webpack-plugin": "^5.5.0",
+    "jest": "^27.4.7",
     "node-sass": "^6.0.1",
     "prettier": "^2.4.1",
     "sass-loader": "^12.2.0",
